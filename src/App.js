@@ -1,25 +1,57 @@
-import logo from './logo.svg';
-import './App.css';
+import { Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './contexts/AuthContext'
+import { Dashboard } from './components/Dashboard'
+import { Relatorio } from './components/relatorio/Relatorio'
+import { Produtos } from './components/produtos/Produtos'
+import { Usuarios } from './components/usuarios/Usuarios'
+import { Movimentacao } from './components/movimentacao/Movimentacao'
+import { MovimentacaoHistorico } from './components/movimentacao/MovimentacaoHistorico'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export default function App() {
+	return (
+		<AuthProvider>
+			<Routes>
+				<Route
+					path="/"
+					element={
+						<Dashboard title="Relatório de Estoque">
+							<Relatorio />
+						</Dashboard>
+					}
+				/>
+				<Route
+					path="/produtos"
+					element={
+						<Dashboard title="Produtos">
+							<Produtos />
+						</Dashboard>
+					}
+				/>
+				<Route
+					path="/estoque/movimentacao"
+					element={
+						<Dashboard title="Movimentação de Estoque">
+							<Movimentacao />
+						</Dashboard>
+					}
+				/>
+				<Route
+					path="/estoque/movimentacao/historico"
+					element={
+						<Dashboard title="Histórico de Movimentações">
+							<MovimentacaoHistorico />
+						</Dashboard>
+					}
+				/>
+				<Route
+					path="/usuarios"
+					element={
+						<Dashboard title="Usuários">
+							<Usuarios />
+						</Dashboard>
+					}
+				/>
+			</Routes>
+		</AuthProvider>
+	)
 }
-
-export default App;
