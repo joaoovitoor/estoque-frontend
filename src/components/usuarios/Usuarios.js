@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@mui/material'
 import { AddCircle } from '@mui/icons-material'
 import { Usuario } from './Usuario'
@@ -6,7 +6,10 @@ import { UsuariosLista } from './UsuariosLista'
 import { Message } from '../Message'
 import { v4 as uuid } from 'uuid'
 import { Excluir, Get, Patch, Post } from '../../data/Verbs'
-import { usuarioVazio, mensagemVazio, showMessage } from '../../data/Interfaces'
+import {
+	mensagemVazio,
+	showMessage,
+} from '../../data/Interfaces'
 
 import styles from '../../_assets/css/generic.module.css'
 
@@ -14,56 +17,70 @@ export const Usuarios = () => {
 	const [message, setMessage] = useState(mensagemVazio)
 
 	const [usuarios, setUsuarios] = useState([])
-	const [usuario, setUsuario] = useState(usuarioVazio)
+	const [usuario, setUsuario] = useState({
+		_id: '0',
+	})
 	const [abreUsuario, setAbreUsuario] = useState(false)
 
 	const salvarUsuario = async (usuario) => {
-		let url = 'http://localhost:5000/usuarios'
+		let url = `${process.env.REACT_APP_API_URL}/usuarios`
 		let message = 'Usuário inserido com sucesso'
 
 		try {
-			if (usuario.id === 0) {
-				usuario.id = uuid()
+			if (usuario._id === '0') {
+				usuario._id = uuid()
 				await Post(url, usuario)
 			} else {
-				await Patch(`${url}/${usuario.id}`, usuario)
+				await Patch(
+					`${url}/${usuario._id}`,
+					usuario,
+				)
 				message = 'Usuário alterado com sucesso'
 			}
 
+			setUsuario({
+				_id: '0',
+			})
+
 			setAbreUsuario(false)
-			fetchUsers()
 			showMessage(
 				{
 					variant: 'success',
 					message: message,
 				},
-				setMessage
+				setMessage,
 			)
 		} catch (error) {
+			setUsuario({
+				_id: '0',
+			})
 			setAbreUsuario(false)
 			showMessage(
 				{
 					variant: 'warning',
 					message: error.message,
 				},
-				setMessage
+				setMessage,
 			)
 		}
 	}
 
 	const ExcluirUsuario = async (usuario) => {
 		try {
-			await Excluir(`http://localhost:5000/usuarios/${usuario.id}`)
+			await Excluir(
+				`${process.env.REACT_APP_API_URL}/usuarios/${usuario._id}`,
+			)
 			setAbreUsuario(false)
-			setUsuario(usuarioVazio)
-			fetchUsers()
+			setUsuario({
+				_id: '0',
+			})
 
 			showMessage(
 				{
 					variant: 'warning',
 					message: 'Usuário excluido com sucesso',
 				},
-				setMessage
+				setMessage,
 			)
 		} catch (error) {
 			setAbreUsuario(false)
@@ -72,31 +89,47 @@ export const Usuarios = () => {
 					variant: 'error',
 					message: error.message,
 				},
-				setMessage
+				setMessage,
 			)
 		}
 	}
 
-	const abrirUsuario = (objUsuario) => {
-		setUsuario(objUsuario)
+	const criarUsuario = () => {
+		setUsuario({
+			_id: '0',
+		})
+
 		setAbreUsuario(true)
 	}
 
-	const fetchUsers = useCallback(async () => {
-		setUsuarios(await Get(`http://localhost:5000/usuarios`))
-	}, [])
+	const alterarUsuario = (objUsuario) => {
+		setUsuario(objUsuario)
+
+		setAbreUsuario(true)
+	}
 
 	useEffect(() => {
+		const fetchUsers = async () => {
+			setUsuarios(
+				await Get(
+					`${process.env.REACT_APP_API_URL}/usuarios`,
+				),
+			)
+		}
+
 		fetchUsers()
-	}, [fetchUsers])
+	}, [message, abreUsuario])
 
 	return (
 		<div className={styles.container}>
 			{message.message && (
-				<Message variant={message.variant} message={message.message} />
+				<Message
+					variant={message.variant}
+					message={message.message}
+				/>
 			)}
 
-			{abreUsuario === true ? (
+			{abreUsuario ? (
 				<Usuario
 					usuario={usuario}
 					className={styles.container}
@@ -108,16 +141,15 @@ export const Usuarios = () => {
 					<Button
 						variant="contained"
 						usuario={usuario}
-						onClick={() => abrirUsuario(usuarioVazio)}
+						onClick={() => criarUsuario()}
 						startIcon={<AddCircle />}
-						sx={{ mt: 1, mb: 1 }}
-					>
+						sx={{ mt: 1, mb: 1 }}>
 						Adicionar
 					</Button>
 
 					<UsuariosLista
 						usuarios={usuarios}
-						handleEditar={abrirUsuario}
+						handleEditar={alterarUsuario}
 						handleExcluir={ExcluirUsuario}
 					/>
 				</>

@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { RelatorioDetalhe } from './RelatorioDetalhe'
 
 import styles from '../../_assets/css/generic.module.css'
 import { RelatorioLista } from './RelatorioLista'
+import { Get } from '../../data/Verbs'
 
 export const Relatorio = () => {
+	const [query, setQuery] = useState('')
 	const [produtos, setProdutos] = useState([])
 	const [produto, setProduto] = useState({})
 	const [detalhe, setDetalhe] = useState(false)
@@ -18,47 +20,35 @@ export const Relatorio = () => {
 		setDetalhe(false)
 	}
 
-	const fetchData = async (url) => {
-		const response = await fetch(url)
-		const responseJson = await response.json()
+	const handleFilter = useCallback(
+		(produtoBusca, checkboxBusca) => {
+			let handleQuery = ''
+			if (produtoBusca) {
+				handleQuery += `&nome=${produtoBusca}`
+			}
 
-		return responseJson
-	}
+			if (checkboxBusca) {
+				handleQuery += `&estoqueminimo=${checkboxBusca}`
+			}
+
+			setQuery(handleQuery)
+		},
+		[],
+	)
 
 	useEffect(() => {
-		const handleProdutos = async () => {
-			const [dataMovimentacoes, dataProdutos] = await Promise.all([
-				fetchData('http://localhost:5000/movimentacoes'),
-				fetchData('http://localhost:5000/produtos'),
-			])
+		const fetchProdutos = async () => {
+			const dataProdutos = await Get(
+				`${
+					process.env.REACT_APP_API_URL
+				}/produtos?limit=10${query && `${query}`}`,
+			)
 
-			if (dataProdutos.length > 0) {
-				let produtosTratado = dataProdutos.map((produto) => {
-					let estoqueideal = produto.estoqueminimo * 5
-					let saldo = dataMovimentacoes
-						.filter(
-							(movimentacao) =>
-								movimentacao.produto === produto.id
-						)
-						.reduce((saldoAcumulado, movimentacao) => {
-							return movimentacao.movementType === 'entrada'
-								? (saldoAcumulado += parseInt(
-										movimentacao.quantidade
-								  ))
-								: (saldoAcumulado -= parseInt(
-										movimentacao.quantidade
-								  ))
-						}, 0)
-
-					return { ...produto, estoqueideal, saldo }
-				})
-
-				setProdutos(produtosTratado)
-			}
+			setProdutos(dataProdutos)
 		}
 
-		handleProdutos()
-	}, [])
+		fetchProdutos()
+	}, [query, detalhe])
 
 	return (
 		<div className={styles.container}>
@@ -66,6 +56,7 @@ export const Relatorio = () => {
 				<RelatorioLista
 					produtos={produtos}
 					handleDetalhe={mostraDetalhe}
+					handleFilter={handleFilter}
 				/>
 			) : (
 				<RelatorioDetalhe

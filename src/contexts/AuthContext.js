@@ -20,21 +20,27 @@ export const AuthProvider = ({ children }) => {
 
 	const login = async (username, password) => {
 		const responseUser = await Get(
-			`http://localhost:5000/usuarios?email=${username}`
+			`${process.env.REACT_APP_API_URL}/usuarios?cpf=${username}`,
 		)
 
 		if (responseUser.length === 0)
-			throw new Error('ERRO - Digite um e-mail valido!')
+			throw new Error('ERRO - Digite um CPF valido!')
 
 		const responseBcrypt = await bcrypt.compare(
 			password,
-			responseUser[0].senha
+			responseUser[0].senha,
 		)
 
 		if (responseBcrypt) {
 			setUser(responseUser[0])
-			localStorage.setItem('user', JSON.stringify(responseUser[0]))
-		} else throw new Error('ERRO - Digite a senha correta!')
+			localStorage.setItem(
+				'user',
+				JSON.stringify(responseUser[0]),
+			)
+		} else
+			throw new Error(
+				'ERRO - Digite a senha correta!',
+			)
 	}
 
 	const logout = () => {
@@ -43,7 +49,8 @@ export const AuthProvider = ({ children }) => {
 	}
 
 	return (
-		<AuthContext.Provider value={{ user, login, logout }}>
+		<AuthContext.Provider
+			value={{ user, login, logout }}>
 			{children}
 		</AuthContext.Provider>
 	)

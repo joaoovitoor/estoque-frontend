@@ -1,8 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, {
+	useState,
+	useEffect,
+	useCallback,
+} from 'react'
 import { green, red } from '@mui/material/colors'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import TextField from '@mui/material/TextField'
-import { Button, Button as MaterialButton } from '@mui/material'
+import {
+	Button,
+	Button as MaterialButton,
+} from '@mui/material'
 import { Autocomplete } from '@mui/material'
 import { Message } from '../Message'
 import {
@@ -18,8 +25,11 @@ import Box from '@mui/material/Box'
 export const Movimentacao = () => {
 	const [message, setMessage] = useState(mensagemVazio)
 	const [produtos, setProdutos] = useState([])
-	const [movementType, setMovementType] = useState('entrada')
-	const [produto, setProduto] = useState(produtoVazioMovimentacao)
+	const [movementType, setMovementType] =
+		useState('entrada')
+	const [produto, setProduto] = useState(
+		produtoVazioMovimentacao,
+	)
 	const [quantidade, setQuantidade] = useState('')
 
 	const handleMovementTypeChange = (event) => {
@@ -49,7 +59,7 @@ export const Movimentacao = () => {
 	}
 
 	const salvarMovimentacao = async (movimentacao) => {
-		let url = 'http://localhost:5000/movimentacoes'
+		let url = `${process.env.REACT_APP_API_URL}/movimentacoes`
 
 		try {
 			await Post(url, movimentacao)
@@ -58,10 +68,14 @@ export const Movimentacao = () => {
 
 			showMessage(
 				{
-					variant: movimentacao.movementType.toUpperCase() === 'ENTRADA' ? 'success' : 'error',
+					variant:
+						movimentacao.movementType.toUpperCase() ===
+						'ENTRADA'
+							? 'success'
+							: 'error',
 					message: `${movimentacao.movementType.toUpperCase()} EFETUADA COM SUCESSO`,
 				},
-				setMessage
+				setMessage,
 			)
 		} catch (error) {
 			showMessage(
@@ -69,13 +83,17 @@ export const Movimentacao = () => {
 					variant: 'warning',
 					message: error.message,
 				},
-				setMessage
+				setMessage,
 			)
 		}
 	}
 
 	const fetchProdutos = useCallback(async () => {
-		setProdutos(await Get('http://localhost:5000/produtos'))
+		setProdutos(
+			await Get(
+				`${process.env.REACT_APP_API_URL}/produtos`,
+			),
+		)
 	}, [])
 
 	useEffect(() => {
@@ -89,8 +107,11 @@ export const Movimentacao = () => {
 				justifyContent="center"
 				alignItems="top"
 				height="calc(100vh - 32px)"
-				bgcolor={movementType === 'entrada' ? '#9ACD32' : '#FF6347'}
-			>
+				bgcolor={
+					movementType === 'entrada'
+						? '#9ACD32'
+						: '#FF6347'
+				}>
 				<form
 					onSubmit={handleFormSubmit}
 					style={{
@@ -101,8 +122,7 @@ export const Movimentacao = () => {
 						backgroundColor: 'white',
 						borderRadius: 2,
 						padding: '20px',
-					}}
-				>
+					}}>
 					{message.message && (
 						<>
 							<Message
@@ -117,27 +137,30 @@ export const Movimentacao = () => {
 					<ButtonGroup
 						fullWidth={true}
 						size="large"
-						aria-label="large button group"
-					>
+						aria-label="large button group">
 						<MaterialButton
 							value="entrada"
-							onClick={handleMovementTypeChange}
+							onClick={
+								handleMovementTypeChange
+							}
 							style={{
 								backgroundColor:
-									movementType === 'entrada'
+									movementType ===
+									'entrada'
 										? green[600]
 										: green[300],
 								color: 'white',
 								paddingTop: '20px',
 								paddingBottom: '20px',
 								fontSize: '2em',
-							}}
-						>
+							}}>
 							Entrada
 						</MaterialButton>
 						<MaterialButton
 							value="saída"
-							onClick={handleMovementTypeChange}
+							onClick={
+								handleMovementTypeChange
+							}
 							style={{
 								backgroundColor:
 									movementType === 'saída'
@@ -147,8 +170,7 @@ export const Movimentacao = () => {
 								paddingTop: '20px',
 								paddingBottom: '20px',
 								fontSize: '2em',
-							}}
-						>
+							}}>
 							Saída
 						</MaterialButton>
 					</ButtonGroup>
@@ -158,20 +180,34 @@ export const Movimentacao = () => {
 						<Autocomplete
 							fullWidth
 							id="produto"
-							value={produto.id}
-							options={produtos.map((produto) => ({
-								id: produto.id,
-								label: `${produto.codigo} - ${produto.nome}`,
-							}))}
-							isOptionEqualToValue={(option, value) =>
-								option.id === value
+							value={
+								produto.id !== '0'
+									? produto
+									: null
 							}
-							onChange={(a, b) => handleProdutoChange(b)}
+							options={produtos.map(
+								(produtoMap) => ({
+									id: produtoMap._id,
+									label: `${produtoMap.codigo} - ${produtoMap.nome}`,
+								}),
+							)}
+							isOptionEqualToValue={(
+								option,
+								value,
+							) =>
+								option.label === value.label
+							}
+							onChange={(a, b) =>
+								handleProdutoChange(b)
+							}
 							style={{
 								paddingTop: '20px',
 							}}
 							renderInput={(params) => (
-								<TextField {...params} label="Produto" />
+								<TextField
+									{...params}
+									label="Produto"
+								/>
 							)}
 						/>
 					)}
@@ -202,8 +238,7 @@ export const Movimentacao = () => {
 							paddingTop: '10px',
 							paddingBottom: '10px',
 							fontSize: '1em',
-						}}
-					>
+						}}>
 						Salvar {movementType}
 					</Button>
 				</form>

@@ -5,10 +5,23 @@ import TextField from '@mui/material/TextField'
 import Box from '@mui/material/Box'
 import PeopleIcon from '@mui/icons-material/People'
 import Typography from '@mui/material/Typography'
+import InputMask from 'react-input-mask'
 
-export const Usuario = ({ usuario, handleFechar, handleSalvar }) => {
+import {
+	formatarCPFBanco,
+	formatarCPFTela,
+} from '../../data/Utils'
+
+export const Usuario = ({
+	usuario,
+	handleFechar,
+	handleSalvar,
+}) => {
 	const passwordEncode = (password) => {
-		return bcrypt.hashSync(password, bcrypt.genSaltSync(10))
+		return bcrypt.hashSync(
+			password,
+			bcrypt.genSaltSync(10),
+		)
 	}
 
 	const handleSubmit = (event) => {
@@ -19,9 +32,9 @@ export const Usuario = ({ usuario, handleFechar, handleSalvar }) => {
 		usuario.nome = data.get('nome')
 		usuario.email = data.get('email')
 		usuario.telefone = data.get('telefone')
-		usuario.cpf = data.get('cpf')
+		usuario.cpf = formatarCPFBanco(data.get('cpf'))
 
-		if (usuario.id === 0) {
+		if (usuario._id === '0') {
 			usuario.senha = data.get('senha')
 			usuario.senha = passwordEncode(usuario.senha)
 		}
@@ -38,21 +51,26 @@ export const Usuario = ({ usuario, handleFechar, handleSalvar }) => {
 				alignItems: 'center',
 				justifyContent: 'center',
 				backgroundColor: '#FFFFFF',
-			}}
-		>
-			<Avatar sx={{ m: 1, mt: 3, bgcolor: 'primary.main' }}>
+			}}>
+			<Avatar
+				sx={{
+					m: 1,
+					mt: 3,
+					bgcolor: 'primary.main',
+				}}>
 				<PeopleIcon />
 			</Avatar>
 
 			<Typography component="h1" variant="h5">
-				{usuario.id === 0 ? 'Adicionar Usuário' : 'Alterar Usuário'}
+				{usuario._id === '0'
+					? 'Adicionar Usuário'
+					: 'Alterar Usuário'}
 			</Typography>
 
 			<Box
 				component="form"
 				onSubmit={handleSubmit}
-				sx={{ width: '100%', p: 4 }}
-			>
+				sx={{ width: '100%', p: 4 }}>
 				<TextField
 					margin="normal"
 					required
@@ -74,30 +92,39 @@ export const Usuario = ({ usuario, handleFechar, handleSalvar }) => {
 					defaultValue={usuario.email}
 					autoComplete="E-mail"
 				/>
-				<TextField
-					margin="normal"
-					type="tel"
+				<InputMask
+					mask="(99) 99999-9999"
+					value={usuario.telefone}
 					required
 					fullWidth
 					name="telefone"
 					label="Telefone"
 					id="telefone"
-					defaultValue={usuario.telefone}
 					autoComplete="Telefone"
-				/>
-				<TextField
-					margin="normal"
-					type="cpf"
+					margin="normal">
+					{(inputProps) => (
+						<TextField {...inputProps} />
+					)}
+				</InputMask>
+				<InputMask
+					mask="999.999.999-99"
+					value={
+						usuario.cpf &&
+						formatarCPFTela(usuario.cpf)
+					}
 					required
 					fullWidth
 					name="cpf"
-					label="CPF"
 					id="cpf"
-					defaultValue={usuario.cpf}
+					label="CPF"
 					autoComplete="CPF"
-				/>
+					margin="normal">
+					{(inputProps) => (
+						<TextField {...inputProps} />
+					)}
+				</InputMask>
 
-				{usuario.id === 0 && (
+				{usuario._id === '0' && (
 					<TextField
 						margin="normal"
 						type="password"
@@ -115,8 +142,7 @@ export const Usuario = ({ usuario, handleFechar, handleSalvar }) => {
 					fullWidth
 					variant="contained"
 					color="success"
-					sx={{ mt: 3, mb: 2 }}
-				>
+					sx={{ mt: 3, mb: 2 }}>
 					Salvar
 				</Button>
 				<Button
@@ -125,8 +151,7 @@ export const Usuario = ({ usuario, handleFechar, handleSalvar }) => {
 					variant="contained"
 					color="primary"
 					sx={{ mt: 0, mb: 2 }}
-					onClick={() => handleFechar(false)}
-				>
+					onClick={() => handleFechar(false)}>
 					Voltar
 				</Button>
 			</Box>

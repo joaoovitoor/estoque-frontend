@@ -21,11 +21,12 @@ export const Excluir = async (url) => {
 }
 
 export const Post = async (url, data) => {
+	delete data._id
 	const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-    })
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(data),
+	})
 
 	if (!response.ok) {
 		throw new Error('Erro ao processar fetch')
@@ -36,10 +37,10 @@ export const Post = async (url, data) => {
 
 export const Patch = async (url, data) => {
 	const response = await fetch(url, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-    })
+		method: 'PATCH',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(data),
+	})
 
 	if (!response.ok) {
 		throw new Error('Erro ao processar fetch')

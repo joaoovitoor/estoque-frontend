@@ -5,7 +5,6 @@ import { Relatorio } from './components/relatorio/Relatorio'
 import { Produtos } from './components/produtos/Produtos'
 import { Usuarios } from './components/usuarios/Usuarios'
 import { Movimentacao } from './components/movimentacao/Movimentacao'
-import { MovimentacaoHistorico } from './components/movimentacao/MovimentacaoHistorico'
 
 export default function App() {
 	return (
@@ -32,14 +31,6 @@ export default function App() {
 					element={
 						<Dashboard title="Movimentação de Estoque">
 							<Movimentacao />
-						</Dashboard>
-					}
-				/>
-				<Route
-					path="/estoque/movimentacao/historico"
-					element={
-						<Dashboard title="Histórico de Movimentações">
-							<MovimentacaoHistorico />
 						</Dashboard>
 					}
 				/>

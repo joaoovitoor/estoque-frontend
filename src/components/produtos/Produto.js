@@ -5,7 +5,11 @@ import Box from '@mui/material/Box'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import Typography from '@mui/material/Typography'
 
-export const Produto = ({ produto, handleFechar, handleSalvar }) => {
+export const Produto = ({
+	produto,
+	handleFechar,
+	handleSalvar,
+}) => {
 	const handleSubmit = (event) => {
 		event.preventDefault()
 
@@ -27,21 +31,26 @@ export const Produto = ({ produto, handleFechar, handleSalvar }) => {
 				alignItems: 'center',
 				justifyContent: 'center',
 				backgroundColor: '#FFFFFF',
-			}}
-		>
-			<Avatar sx={{ m: 1, mt: 3, bgcolor: 'primary.main' }}>
+			}}>
+			<Avatar
+				sx={{
+					m: 1,
+					mt: 3,
+					bgcolor: 'primary.main',
+				}}>
 				<ShoppingCartIcon />
 			</Avatar>
 
 			<Typography component="h1" variant="h5">
-				{produto.id === 0 ? 'Adicionar Produto' : 'Alterar Produto'}
+				{produto._id === '0'
+					? 'Adicionar Produto'
+					: 'Alterar Produto'}
 			</Typography>
 
 			<Box
 				component="form"
 				onSubmit={handleSubmit}
-				sx={{ width: '100%', p: 4 }}
-			>
+				sx={{ width: '100%', p: 4 }}>
 				<TextField
 					margin="normal"
 					required
@@ -79,8 +88,7 @@ export const Produto = ({ produto, handleFechar, handleSalvar }) => {
 					fullWidth
 					variant="contained"
 					color="success"
-					sx={{ mt: 3, mb: 2 }}
-				>
+					sx={{ mt: 3, mb: 2 }}>
 					Salvar
 				</Button>
 				<Button
@@ -89,8 +97,7 @@ export const Produto = ({ produto, handleFechar, handleSalvar }) => {
 					variant="contained"
 					color="primary"
 					sx={{ mt: 0, mb: 2 }}
-					onClick={() => handleFechar(false)}
-				>
+					onClick={() => handleFechar(false)}>
 					Voltar
 				</Button>
 			</Box>
