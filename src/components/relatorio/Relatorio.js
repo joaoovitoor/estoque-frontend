@@ -1,12 +1,18 @@
-import { useState, useEffect, useCallback } from 'react'
-import { RelatorioDetalhe } from './RelatorioDetalhe'
+import { useState, useEffect } from 'react'
 
 import styles from '../../_assets/css/generic.module.css'
-import { RelatorioLista } from './RelatorioLista'
 import { Get } from '../../data/Verbs'
+import { Loader } from '../loader/Loader'
+import { RelatorioDetalhe } from './RelatorioDetalhe'
+import { RelatorioLista } from './RelatorioLista'
 
 export const Relatorio = () => {
-	const [query, setQuery] = useState('')
+	const [fields, setFields] = useState({
+		produto: '',
+		checkbox: false,
+	})
+
+	const [isLoading, setIsLoading] = useState(true)
 	const [produtos, setProdutos] = useState([])
 	const [produto, setProduto] = useState({})
 	const [detalhe, setDetalhe] = useState(false)
@@ -20,23 +26,25 @@ export const Relatorio = () => {
 		setDetalhe(false)
 	}
 
-	const handleFilter = useCallback(
-		(produtoBusca, checkboxBusca) => {
-			let handleQuery = ''
-			if (produtoBusca) {
-				handleQuery += `&nome=${produtoBusca}`
-			}
+	const handleFields = (_fields) => {
+		setFields(_fields)
+	}
 
-			if (checkboxBusca) {
-				handleQuery += `&estoqueminimo=${checkboxBusca}`
-			}
+	const handleQuery = (_fields) => {
+		let query = ''
+		if (_fields.produto) {
+			query += `&nome=${_fields.produto}`
+		}
 
-			setQuery(handleQuery)
-		},
-		[],
-	)
+		if (_fields.checkbox) {
+			query += `&estoqueminimo=${_fields.checkbox}`
+		}
+
+		return query
+	}
 
 	useEffect(() => {
+		const query = handleQuery(fields)
 		const fetchProdutos = async () => {
 			const dataProdutos = await Get(
 				`${
@@ -45,24 +53,32 @@ export const Relatorio = () => {
 			)
 
 			setProdutos(dataProdutos)
+			setIsLoading(false)
 		}
 
 		fetchProdutos()
-	}, [query, detalhe])
+	}, [fields, detalhe])
 
 	return (
 		<div className={styles.container}>
-			{detalhe === false ? (
-				<RelatorioLista
-					produtos={produtos}
-					handleDetalhe={mostraDetalhe}
-					handleFilter={handleFilter}
-				/>
+			{isLoading ? (
+				<Loader />
 			) : (
-				<RelatorioDetalhe
-					produto={produto}
-					handleFechar={fecharDetalhe}
-				/>
+				<>
+					{detalhe === false ? (
+						<RelatorioLista
+							produtos={produtos}
+							fields={fields}
+							handleDetalhe={mostraDetalhe}
+							handleFields={handleFields}
+						/>
+					) : (
+						<RelatorioDetalhe
+							produto={produto}
+							handleFechar={fecharDetalhe}
+						/>
+					)}
+				</>
 			)}
 		</div>
 	)

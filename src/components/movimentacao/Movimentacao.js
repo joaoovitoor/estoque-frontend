@@ -1,30 +1,28 @@
-import React, {
-	useState,
-	useEffect,
-	useCallback,
-} from 'react'
-import { green, red } from '@mui/material/colors'
-import ButtonGroup from '@mui/material/ButtonGroup'
-import TextField from '@mui/material/TextField'
+import { useState } from 'react'
+
 import {
 	Button,
 	Button as MaterialButton,
 } from '@mui/material'
 import { Autocomplete } from '@mui/material'
-import { Message } from '../Message'
+import Box from '@mui/material/Box'
+import ButtonGroup from '@mui/material/ButtonGroup'
+import TextField from '@mui/material/TextField'
+import { green, red } from '@mui/material/colors'
+
 import {
 	produtoVazioMovimentacao,
 	mensagemVazio,
 	showMessage,
 } from '../../data/Interfaces'
-
 import { Get, Post } from '../../data/Verbs'
-
-import Box from '@mui/material/Box'
+import { Message } from '../Message'
 
 export const Movimentacao = () => {
+	const [options, setOptions] = useState([])
+	const [loading, setLoading] = useState(false)
+
 	const [message, setMessage] = useState(mensagemVazio)
-	const [produtos, setProdutos] = useState([])
 	const [movementType, setMovementType] =
 		useState('entrada')
 	const [produto, setProduto] = useState(
@@ -88,20 +86,27 @@ export const Movimentacao = () => {
 		}
 	}
 
-	const fetchProdutos = useCallback(async () => {
-		setProdutos(
-			await Get(
-				`${process.env.REACT_APP_API_URL}/produtos`,
-			),
-		)
-	}, [])
-
-	useEffect(() => {
-		fetchProdutos()
-	}, [fetchProdutos])
+	const loadOptions = async (inputValue) => {
+		setLoading(true)
+		try {
+			const response = await Get(
+				`${process.env.REACT_APP_API_URL}/produtos?nome=${inputValue}&limit=10`,
+			)
+			setOptions(
+				response.map((produtoMap) => ({
+					id: produtoMap._id,
+					label: `${produtoMap.codigo} - ${produtoMap.nome}`,
+				})),
+			)
+			setLoading(false)
+		} catch (error) {
+			console.error(error)
+			setLoading(false)
+		}
+	}
 
 	return (
-		<div>
+		<>
 			<Box
 				display="flex"
 				justifyContent="center"
@@ -176,41 +181,37 @@ export const Movimentacao = () => {
 					</ButtonGroup>
 					<br />
 
-					{produtos && (
-						<Autocomplete
-							fullWidth
-							id="produto"
-							value={
-								produto.id !== '0'
-									? produto
-									: null
-							}
-							options={produtos.map(
-								(produtoMap) => ({
-									id: produtoMap._id,
-									label: `${produtoMap.codigo} - ${produtoMap.nome}`,
-								}),
-							)}
-							isOptionEqualToValue={(
-								option,
-								value,
-							) =>
-								option.label === value.label
-							}
-							onChange={(a, b) =>
-								handleProdutoChange(b)
-							}
-							style={{
-								paddingTop: '20px',
-							}}
-							renderInput={(params) => (
-								<TextField
-									{...params}
-									label="Produto"
-								/>
-							)}
-						/>
-					)}
+					<Autocomplete
+						fullWidth
+						id="produto"
+						value={
+							produto.id !== '0'
+								? produto
+								: null
+						}
+						loading={loading}
+						options={options}
+						onInputChange={(event, value) => {
+							loadOptions(value)
+						}}
+						isOptionEqualToValue={(
+							option,
+							value,
+						) => option.label === value.label}
+						onChange={(a, b) =>
+							handleProdutoChange(b)
+						}
+						style={{
+							paddingTop: '20px',
+						}}
+						renderInput={(params) => (
+							<TextField
+								{...params}
+								label="Produto"
+							/>
+						)}
+					/>
+
 					<br />
 					<TextField
 						fullWidth
@@ -243,6 +244,6 @@ export const Movimentacao = () => {
 					</Button>
 				</form>
 			</Box>
-		</div>
+		</>
 	)
 }

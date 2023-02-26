@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
-import { styled } from '@mui/material/styles'
-import ZoomInIcon from '@mui/icons-material/ZoomIn'
+import { useState } from 'react'
+
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import SaveIcon from '@mui/icons-material/Save'
+import ZoomInIcon from '@mui/icons-material/ZoomIn'
 import {
 	Grid,
 	TextField,
@@ -10,7 +10,7 @@ import {
 	FormControlLabel,
 	IconButton,
 } from '@mui/material'
-
+import Paper from '@mui/material/Paper'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell, {
@@ -19,18 +19,17 @@ import TableCell, {
 import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
-import Paper from '@mui/material/Paper'
+import { styled } from '@mui/material/styles'
+
 import { providenciaVazio } from '../../data/Interfaces'
 import { Patch } from '../../data/Verbs'
 
 export const RelatorioLista = ({
 	produtos,
+	fields,
 	handleDetalhe,
-	handleFilter,
+	handleFields,
 }) => {
-	const [produtoBusca, setProdutoBusca] = useState('')
-	const [checkboxBusca, setCheckboxBusca] =
-		useState(false)
 	const [providencia, setProvidencia] = useState(
 		providenciaVazio,
 	)
@@ -63,10 +62,6 @@ export const RelatorioLista = ({
 		}),
 	)
 
-	useEffect(() => {
-		handleFilter(produtoBusca, checkboxBusca)
-	}, [produtoBusca, checkboxBusca, handleFilter])
-
 	return (
 		<>
 			<Grid container spacing={0}>
@@ -79,10 +74,14 @@ export const RelatorioLista = ({
 						label="Busque por Produto"
 						name="produto"
 						autoComplete="produto"
-						defaultValue={produtoBusca}
+						defaultValue={fields.produto}
 						autoFocus
 						onChange={(e) =>
-							setProdutoBusca(e.target.value)
+							handleFields({
+								...fields,
+								[e.target.name]:
+									e.target.value,
+							})
 						}
 					/>
 				</Grid>
@@ -94,11 +93,15 @@ export const RelatorioLista = ({
 						}}
 						control={
 							<Checkbox
-								value={checkboxBusca}
+								name="checkbox"
+								value={fields.checkbox}
 								onChange={(e) =>
-									setCheckboxBusca(
-										e.target.checked,
-									)
+									handleFields({
+										...fields,
+										[e.target.name]:
+											e.target
+												.checked,
+									})
 								}
 							/>
 						}

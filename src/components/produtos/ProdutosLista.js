@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useState } from 'react'
 import { styled } from '@mui/material/styles'
 
 import { Grid, TextField } from '@mui/material'
@@ -22,13 +22,11 @@ export const ProdutosLista = ({
 	handleAdicionar,
 	handleEditar,
 	handleExcluir,
+	handleBusca,
+	query,
 }) => {
-	const [produtoBusca, setProdutoBusca] =
-		React.useState('')
-	const [produtosFiltrados, setProdutosFiltrados] =
-		React.useState([])
-	const [modalOpen, setModalOpen] = React.useState(false)
-	const [codigo, setCodigo] = React.useState('')
+	const [modalOpen, setModalOpen] = useState(false)
+	const [codigo, setCodigo] = useState('')
 
 	const barcodeProduto = (produto) => {
 		setCodigo(produto.codigo)
@@ -51,39 +49,6 @@ export const ProdutosLista = ({
 		handleExcluir(produto)
 	}
 
-	const handleFilter = React.useCallback(
-		(produtoBusca, checkboxBusca) => {
-			let filtrando = produtos
-
-			if (produtoBusca) {
-				filtrando = produtos.filter(
-					(produto) =>
-						produto.nome
-							.toUpperCase()
-							.includes(
-								produtoBusca.toUpperCase(),
-							) ||
-						produto.codigo
-							.toUpperCase()
-							.includes(
-								produtoBusca.toUpperCase(),
-							),
-				)
-			}
-
-			if (checkboxBusca) {
-				filtrando = produtos.filter(
-					(produto) =>
-						produto.estoqueminimo >=
-						produto.saldo,
-				)
-			}
-
-			setProdutosFiltrados(filtrando)
-		},
-		[produtos],
-	)
-
 	const StyledTableCell = styled(TableCell)(
 		({ theme }) => ({
 			[`&.${tableCellClasses.head}`]: {
@@ -95,10 +60,6 @@ export const ProdutosLista = ({
 			},
 		}),
 	)
-
-	React.useEffect(() => {
-		handleFilter(produtoBusca)
-	}, [handleFilter, produtoBusca])
 
 	return (
 		<>
@@ -115,10 +76,10 @@ export const ProdutosLista = ({
 						label="Busque por Produto"
 						name="produto"
 						autoComplete="produto"
-						defaultValue={produtoBusca}
+						defaultValue={query}
 						autoFocus
 						onChange={(e) =>
-							setProdutoBusca(e.target.value)
+							handleBusca(e.target.value)
 						}
 					/>
 				</Grid>
@@ -151,66 +112,62 @@ export const ProdutosLista = ({
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{produtosFiltrados
-							.slice(0, 10)
-							.map((produto) => (
-								<TableRow
-									key={produto._id}
-									sx={{
-										'&:last-child td, &:last-child th':
-											{
-												border: 0,
-											},
-									}}>
-									<TableCell
-										component="th"
-										scope="row">
-										{produto.codigo}
-									</TableCell>
-									<TableCell>
-										{produto.nome}
-									</TableCell>
-									<TableCell>
+						{produtos.map((produto) => (
+							<TableRow
+								key={produto._id}
+								sx={{
+									'&:last-child td, &:last-child th':
 										{
-											produto.estoqueminimo
-										}
-									</TableCell>
-									<TableCell align="right">
-										<IconButton
-											aria-label="Código de Barras"
-											size="small"
-											onClick={() =>
-												barcodeProduto(
-													produto,
-												)
-											}>
-											<QrCode2Icon />
-										</IconButton>
+											border: 0,
+										},
+								}}>
+								<TableCell
+									component="th"
+									scope="row">
+									{produto.codigo}
+								</TableCell>
+								<TableCell>
+									{produto.nome}
+								</TableCell>
+								<TableCell>
+									{produto.estoqueminimo}
+								</TableCell>
+								<TableCell align="right">
+									<IconButton
+										aria-label="Código de Barras"
+										size="small"
+										onClick={() =>
+											barcodeProduto(
+												produto,
+											)
+										}>
+										<QrCode2Icon />
+									</IconButton>
 
-										<IconButton
-											aria-label="Editar Produto"
-											size="small"
-											onClick={() =>
-												editarProduto(
-													produto,
-												)
-											}>
-											<ModeEditIcon />
-										</IconButton>
+									<IconButton
+										aria-label="Editar Produto"
+										size="small"
+										onClick={() =>
+											editarProduto(
+												produto,
+											)
+										}>
+										<ModeEditIcon />
+									</IconButton>
 
-										<IconButton
-											aria-label="delete"
-											size="small"
-											onClick={() =>
-												excluirProduto(
-													produto,
-												)
-											}>
-											<DeleteIcon fontSize="small" />
-										</IconButton>
-									</TableCell>
-								</TableRow>
-							))}
+									<IconButton
+										aria-label="delete"
+										size="small"
+										onClick={() =>
+											excluirProduto(
+												produto,
+											)
+										}>
+										<DeleteIcon fontSize="small" />
+									</IconButton>
+								</TableCell>
+							</TableRow>
+						))}
 					</TableBody>
 				</Table>
 			</TableContainer>

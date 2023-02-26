@@ -97,7 +97,7 @@ export const Produto = ({
 					variant="contained"
 					color="primary"
 					sx={{ mt: 0, mb: 2 }}
-					onClick={() => handleFechar(false)}>
+					onClick={() => handleFechar()}>
 					Voltar
 				</Button>
 			</Box>

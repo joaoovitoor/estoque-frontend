@@ -15,12 +15,13 @@ import styles from '../../_assets/css/generic.module.css'
 
 export const Usuarios = () => {
 	const [message, setMessage] = useState(mensagemVazio)
-
 	const [usuarios, setUsuarios] = useState([])
-	const [usuario, setUsuario] = useState({
-		_id: '0',
+	const [abreUsuario, setAbreUsuario] = useState({
+		status: false,
+		usuario: {
+			_id: '0',
+		},
 	})
-	const [abreUsuario, setAbreUsuario] = useState(false)
 
 	const salvarUsuario = async (usuario) => {
 		let url = `${process.env.REACT_APP_API_URL}/usuarios`
@@ -38,11 +39,7 @@ export const Usuarios = () => {
 				message = 'Usuário alterado com sucesso'
 			}
 
-			setUsuario({
-				_id: '0',
-			})
-
-			setAbreUsuario(false)
+			closeUsuario()
 			showMessage(
 				{
 					variant: 'success',
@@ -51,10 +48,7 @@ export const Usuarios = () => {
 				setMessage,
 			)
 		} catch (error) {
-			setUsuario({
-				_id: '0',
-			})
-			setAbreUsuario(false)
+			closeUsuario()
 			showMessage(
 				{
 					variant: 'warning',
@@ -70,11 +64,8 @@ export const Usuarios = () => {
 			await Excluir(
 				`${process.env.REACT_APP_API_URL}/usuarios/${usuario._id}`,
 			)
-			setAbreUsuario(false)
-			setUsuario({
-				_id: '0',
-			})
 
+			closeUsuario()
 			showMessage(
 				{
 					variant: 'warning',
@@ -83,7 +74,8 @@ export const Usuarios = () => {
 				setMessage,
 			)
 		} catch (error) {
-			setAbreUsuario(false)
+			closeUsuario()
+
 			showMessage(
 				{
 					variant: 'error',
@@ -94,18 +86,20 @@ export const Usuarios = () => {
 		}
 	}
 
-	const criarUsuario = () => {
-		setUsuario({
-			_id: '0',
+	const openUsuario = (_usuario) => {
+		setAbreUsuario({
+			status: true,
+			usuario: _usuario,
 		})
-
-		setAbreUsuario(true)
 	}
 
-	const alterarUsuario = (objUsuario) => {
-		setUsuario(objUsuario)
-
-		setAbreUsuario(true)
+	const closeUsuario = () => {
+		setAbreUsuario({
+			status: false,
+			usuario: {
+				_id: '0',
+			},
+		})
 	}
 
 	useEffect(() => {
@@ -118,7 +112,7 @@ export const Usuarios = () => {
 		}
 
 		fetchUsers()
-	}, [message, abreUsuario])
+	}, [abreUsuario])
 
 	return (
 		<div className={styles.container}>
@@ -129,19 +123,23 @@ export const Usuarios = () => {
 				/>
 			)}
 
-			{abreUsuario ? (
+			{abreUsuario.status ? (
 				<Usuario
-					usuario={usuario}
+					usuario={abreUsuario.usuario}
 					className={styles.container}
 					handleSalvar={salvarUsuario}
-					handleFechar={setAbreUsuario}
+					handleFechar={closeUsuario}
 				/>
 			) : (
 				<>
 					<Button
 						variant="contained"
-						usuario={usuario}
-						onClick={() => criarUsuario()}
+						usuario={abreUsuario.usuario}
+						onClick={() =>
+							openUsuario({
+								_id: '0',
+							})
+						}
 						startIcon={<AddCircle />}
 						sx={{ mt: 1, mb: 1 }}>
 						Adicionar
@@ -149,7 +147,7 @@ export const Usuarios = () => {
 
 					<UsuariosLista
 						usuarios={usuarios}
-						handleEditar={alterarUsuario}
+						handleEditar={openUsuario}
 						handleExcluir={ExcluirUsuario}
 					/>
 				</>

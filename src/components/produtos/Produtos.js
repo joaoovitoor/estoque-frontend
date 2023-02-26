@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@mui/material'
 import { AddCircle } from '@mui/icons-material'
 import { Produto } from './Produto'
@@ -7,6 +7,7 @@ import { Message } from '../Message'
 import { v4 as uuid } from 'uuid'
 import { Excluir, Get, Patch, Post } from '../../data/Verbs'
 import { ordenarData } from '../../data/Utils'
+import { Loader } from '../loader/Loader'
 import {
 	produtoVazio,
 	mensagemVazio,
@@ -16,11 +17,14 @@ import {
 import styles from '../../_assets/css/generic.module.css'
 
 export const Produtos = () => {
+	const [query, setQuery] = useState('')
+	const [isLoading, setIsLoading] = useState(true)
 	const [message, setMessage] = useState(mensagemVazio)
-
 	const [produtos, setProdutos] = useState([])
-	const [produto, setProduto] = useState(produtoVazio)
-	const [abreProduto, setAbreProduto] = useState(false)
+	const [abreProduto, setAbreProduto] = useState({
+		status: false,
+		produto: produtoVazio,
+	})
 
 	const salvarProduto = async (produto) => {
 		let url = `${process.env.REACT_APP_API_URL}/produtos`
@@ -38,11 +42,8 @@ export const Produtos = () => {
 				message = 'Produto alterado com sucesso'
 			}
 
-			setProduto({
-				_id: '0',
-			})
-			setAbreProduto(false)
-			fetchProdutos()
+			closeProduto()
+
 			showMessage(
 				{
 					variant: 'success',
@@ -51,10 +52,8 @@ export const Produtos = () => {
 				setMessage,
 			)
 		} catch (error) {
-			setProduto({
-				_id: '0',
-			})
-			setAbreProduto(false)
+			closeProduto()
+
 			showMessage(
 				{
 					variant: 'warning',
@@ -70,8 +69,6 @@ export const Produtos = () => {
 			await Excluir(
 				`${process.env.REACT_APP_API_URL}/produtos/${produto._id}`,
 			)
-
-			fetchProdutos()
 
 			showMessage(
 				{
@@ -91,66 +88,98 @@ export const Produtos = () => {
 		}
 	}
 
-	const abrirProduto = (objProduto) => {
-		setProduto(objProduto)
-
-		setAbreProduto(true)
+	const handleBusca = (_query) => {
+		setQuery(_query)
 	}
 
-	const fetchProdutos = useCallback(async () => {
-		const produtosFetch = await Get(
-			`${process.env.REACT_APP_API_URL}/produtos`,
-		)
-		const produtosOrdenados = ordenarData(
-			produtosFetch,
-			'created_at',
-			'desc',
-		)
+	const openProduto = (_produto) => {
+		setAbreProduto({
+			status: true,
+			produto: _produto,
+		})
+	}
 
-		setProdutos(produtosOrdenados)
-	}, [])
+	const closeProduto = () => {
+		setAbreProduto({
+			status: false,
+			produto: {
+				_id: '0',
+			},
+		})
+	}
 
 	useEffect(() => {
+		const fetchProdutos = async () => {
+			const produtosFetch = await Get(
+				`${process.env.REACT_APP_API_URL}/produtos?nome=${query}&limit=10`,
+			)
+			const produtosOrdenados = ordenarData(
+				produtosFetch,
+				'created_at',
+				'desc',
+			)
+
+			setProdutos(produtosOrdenados)
+			setIsLoading(false)
+		}
+
 		fetchProdutos()
-	}, [fetchProdutos])
+	}, [query, abreProduto])
 
 	return (
 		<div className={styles.container}>
-			{message.message && (
-				<Message
-					variant={message.variant}
-					message={message.message}
-				/>
-			)}
-
-			{abreProduto === true ? (
-				<Produto
-					produto={produto}
-					className={styles.container}
-					handleSalvar={salvarProduto}
-					handleFechar={setAbreProduto}
-				/>
+			{isLoading ? (
+				<Loader />
 			) : (
 				<>
-					<ProdutosLista
-						produtos={produtos}
-						handleEditar={abrirProduto}
-						handleExcluir={ExcluirProduto}
-						handleAdicionar={
-							<Button
-								variant="contained"
-								produto={produto}
-								onClick={() =>
-									abrirProduto({
-										_id: '0',
-									})
+					{message.message && (
+						<Message
+							variant={message.variant}
+							message={message.message}
+						/>
+					)}
+
+					{abreProduto.status === true ? (
+						<Produto
+							produto={abreProduto.produto}
+							className={styles.container}
+							handleSalvar={salvarProduto}
+							handleFechar={closeProduto}
+						/>
+					) : (
+						<>
+							<ProdutosLista
+								produtos={produtos}
+								handleEditar={openProduto}
+								handleExcluir={
+									ExcluirProduto
 								}
-								startIcon={<AddCircle />}
-								sx={{ mt: 1, mb: 1 }}>
-								Adicionar
-							</Button>
-						}
-					/>
+								handleBusca={handleBusca}
+								query={query}
+								handleAdicionar={
+									<Button
+										variant="contained"
+										produto={
+											abreProduto.produto
+										}
+										onClick={() =>
+											openProduto({
+												_id: '0',
+											})
+										}
+										startIcon={
+											<AddCircle />
+										}
+										sx={{
+											mt: 1,
+											mb: 1,
+										}}>
+										Adicionar
+									</Button>
+								}
+							/>
+						</>
+					)}
 				</>
 			)}
 		</div>
