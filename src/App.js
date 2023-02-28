@@ -13,7 +13,7 @@ export default function App() {
                 <Route
                     path='/'
                     element={
-                        <Dashboard title='Relatório de Estoque'>
+                        <Dashboard title='Estoque'>
                             <Relatorio />
                         </Dashboard>
                     }
