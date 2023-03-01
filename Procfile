@@ -1,1 +1,1 @@
-web: node_modules/.bin/react-scripts start
+web: react-scripts start
