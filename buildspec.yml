@@ -4,12 +4,10 @@ phases:
   install:
     runtime-versions:
       nodejs: 14
+  pre_build:
     commands:
       - npm install
   build:
     commands:
       - npm run build
-
-artifacts:
-  files:
-    - '**/*'
+      - zip -r ../estoque-frontend.zip .
