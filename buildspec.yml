@@ -10,4 +10,8 @@ phases:
   build:
     commands:
       - npm run build
-      - zip -r ../estoque-frontend.zip .
+artifacts:
+  files:
+    - '**/*'
+  discard-paths: no
+  base-directory: build
