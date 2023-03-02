@@ -8,7 +8,7 @@ export const ProdutoBarcode = (props) => {
         <Dialog open={open} onClose={onClose}>
             <DialogTitle>Código de Barras</DialogTitle>
             <DialogContent>
-                <Barcode value={value} />
+                <Barcode value={value} format={'CODE128'} />
             </DialogContent>
         </Dialog>
     );
