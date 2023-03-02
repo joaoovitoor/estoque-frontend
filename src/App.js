@@ -1,4 +1,3 @@
-/*
 import { Dashboard } from './components/Dashboard';
 import { Movimentacao } from './components/movimentacao/Movimentacao';
 import { Produtos } from './components/produtos/Produtos';
@@ -6,11 +5,9 @@ import { Relatorio } from './components/relatorio/Relatorio';
 import { Usuarios } from './components/usuarios/Usuarios';
 import { AuthProvider } from './contexts/AuthContext';
 import { Routes, Route } from 'react-router-dom';
-*/
+
 export default function App() {
     return (
-        <>Aplicação react</>
-        /*
         <AuthProvider>
             <Routes>
                 <Route
@@ -46,6 +43,6 @@ export default function App() {
                     }
                 />
             </Routes>
-        </AuthProvider>*/
+        </AuthProvider>
     );
 }
