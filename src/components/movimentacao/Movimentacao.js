@@ -82,7 +82,7 @@ export const Movimentacao = () => {
             setOptions(
                 response.map((produtoMap) => ({
                     id: produtoMap._id,
-                    label: `${produtoMap.codigo} - ${produtoMap.nome}`,
+                    label: `${produtoMap.codigo} - ${produtoMap.nome} (${produtoMap.saldo})`,
                 })),
             );
 
