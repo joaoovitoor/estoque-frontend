@@ -65,7 +65,7 @@ export function Relatorio() {
                 <>
                     {detalhe === false ? (
                         <>
-                            <ExportToExcel jsonData={produtos} />
+                            <ExportToExcel />
 
                             <RelatorioLista
                                 produtos={produtos}
