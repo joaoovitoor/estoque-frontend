@@ -4,6 +4,7 @@ import { Loader } from '../loader/Loader';
 import { RelatorioDetalhe } from './RelatorioDetalhe';
 import { RelatorioLista } from './RelatorioLista';
 import { useState, useEffect } from 'react';
+import { ExportToExcel } from './ExportToExcel';
 
 export function Relatorio() {
     const [fields, setFields] = useState({
@@ -63,12 +64,16 @@ export function Relatorio() {
             ) : (
                 <>
                     {detalhe === false ? (
-                        <RelatorioLista
-                            produtos={produtos}
-                            fields={fields}
-                            handleDetalhe={mostraDetalhe}
-                            handleFields={handleFields}
-                        />
+                        <>
+                            <ExportToExcel jsonData={produtos} />
+
+                            <RelatorioLista
+                                produtos={produtos}
+                                fields={fields}
+                                handleDetalhe={mostraDetalhe}
+                                handleFields={handleFields}
+                            />
+                        </>
                     ) : (
                         <RelatorioDetalhe produto={produto} handleFechar={fecharDetalhe} />
                     )}

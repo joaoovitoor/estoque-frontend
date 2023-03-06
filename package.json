@@ -9,12 +9,16 @@
     "@mui/material": "^5.11.7",
     "bcryptjs-react": "^2.4.6",
     "bwip-js": "^3.3.0",
+    "json2csv": "^6.0.0-alpha.2",
+    "os-browserify": "^0.3.0",
     "react": "^18.2.0",
+    "react-csv": "^2.2.2",
     "react-dom": "^18.2.0",
     "react-input-mask": "^2.0.4",
     "react-router-dom": "^6.8.0",
     "react-scripts": "^5.0.1",
     "serve": "^14.2.0",
+    "stream-browserify": "^3.0.0",
     "uuid": "^9.0.0"
   },
   "scripts": {
