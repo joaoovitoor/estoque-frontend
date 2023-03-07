@@ -69,3 +69,20 @@ export const Patch = async (url, data) => {
 
     return response.json();
 };
+
+export const calcularSaldo = async (produto) => {
+    const data = await Get(`${process.env.REACT_APP_API_URL}/movimentacoes?produto=${produto._id}`);
+
+    let saldoAtual = 0;
+    for (let movimentacao of data) {
+        const { quantidade, movementType } = movimentacao;
+        saldoAtual =
+            movementType === 'entrada'
+                ? Number(saldoAtual) + Number(quantidade)
+                : Number(saldoAtual) - Number(quantidade);
+    }
+
+    console.log({ saldoAtual, data });
+
+    return saldoAtual;
+};

@@ -1,6 +1,5 @@
 import { showMessage, mensagemVazio } from '../../data/Interfaces';
-import { Excluir } from '../../data/Verbs';
-import { Get } from '../../data/Verbs';
+import { Get, Excluir, Patch, calcularSaldo } from '../../data/Verbs';
 import { Message } from '../Message';
 import { Loader } from '../loader/Loader';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -31,9 +30,18 @@ export const RelatorioDetalhe = ({ produto, handleFechar }) => {
         },
     }));
 
-    const ExcluirMovimentacao = async (movimentacao) => {
+    const ExcluirMovimentacao = async (movimentacao, produto) => {
+        console.log(produto);
         try {
             await Excluir(`${process.env.REACT_APP_API_URL}/movimentacoes/${movimentacao._id}`);
+
+            const saldoAtualizado = await calcularSaldo(produto);
+            const produtoBanco = {
+                ...produto,
+                saldo: saldoAtualizado,
+            };
+
+            await Patch(`${process.env.REACT_APP_API_URL}/produtos/${produto._id}`, produtoBanco);
 
             showMessage(
                 {
@@ -122,7 +130,9 @@ export const RelatorioDetalhe = ({ produto, handleFechar }) => {
                                             <IconButton
                                                 aria-label='delete'
                                                 size='small'
-                                                onClick={() => ExcluirMovimentacao(movimentacao)}
+                                                onClick={() =>
+                                                    ExcluirMovimentacao(movimentacao, produto)
+                                                }
                                             >
                                                 <DeleteIcon fontSize='small' />
                                             </IconButton>

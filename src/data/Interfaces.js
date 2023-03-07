@@ -21,6 +21,7 @@ export const produtoVazio = {
 export const produtoVazioMovimentacao = {
     id: '0',
     label: null,
+    saldo: 0,
 };
 
 export const providenciaVazio = {

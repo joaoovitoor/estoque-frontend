@@ -1,5 +1,5 @@
 import { produtoVazioMovimentacao, mensagemVazio, showMessage } from '../../data/Interfaces';
-import { Get, Post } from '../../data/Verbs';
+import { Get, Post, Patch, calcularSaldo } from '../../data/Verbs';
 import { Message } from '../Message';
 import { Button, Button as MaterialButton } from '@mui/material';
 import { Autocomplete } from '@mui/material';
@@ -30,7 +30,7 @@ export const Movimentacao = () => {
         setQuantidade(event.target.value);
     };
 
-    const handleFormSubmit = (event) => {
+    const handleFormSubmit = async (event) => {
         event.preventDefault();
 
         const movimentacao = {
@@ -41,7 +41,15 @@ export const Movimentacao = () => {
             date: new Date().toJSON(),
         };
 
-        salvarMovimentacao(movimentacao);
+        await salvarMovimentacao(movimentacao);
+
+        const saldoAtualizado = await calcularSaldo(produto);
+        const produtoBanco = {
+            ...produto,
+            saldo: saldoAtualizado,
+        };
+
+        await Patch(`${process.env.REACT_APP_API_URL}/produtos/${produto._id}`, produtoBanco);
     };
 
     const salvarMovimentacao = async (movimentacao) => {
@@ -83,6 +91,7 @@ export const Movimentacao = () => {
                 response.map((produtoMap) => ({
                     id: produtoMap._id,
                     label: `${produtoMap.codigo} - ${produtoMap.nome} (${produtoMap.saldo})`,
+                    ...produtoMap,
                 })),
             );
 

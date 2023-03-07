@@ -14,6 +14,7 @@ export const Produto = ({ produto, handleFechar, handleSalvar }) => {
         produto.codigo = data.get('codigo');
         produto.nome = data.get('nome');
         produto.estoqueminimo = data.get('estoqueminimo');
+        produto.estoqueideal = produto.estoqueminimo * 3;
 
         handleSalvar(produto);
     };
