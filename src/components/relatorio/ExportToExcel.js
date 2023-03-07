@@ -9,7 +9,7 @@ export const ExportToExcel = () => {
     const fetchProdutos = async () => {
         setIsLoading(true);
 
-        const text = await Download(`${process.env.REACT_APP_API_URL}/produtos/csv`);
+        const text = await Download(`${process.env.REACT_APP_API_URL}/produtos/csv?limit=500`);
         const csvContent = `\uFEFF${text}`;
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = window.URL.createObjectURL(blob);
