@@ -12,6 +12,20 @@ export const Get = async (url) => {
     return response.json();
 };
 
+export const Download = async (url) => {
+    const response = await fetch(url, {
+        headers: {
+            Authorization: process.env.REACT_APP_TOKEN,
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error('Erro ao processar fetch');
+    }
+
+    return response.text();
+};
+
 export const Excluir = async (url) => {
     const response = await fetch(url, {
         headers: {

@@ -32,7 +32,6 @@ export function Relatorio() {
     };
 
     const handleQuery = (_fields) => {
-        console.log(_fields);
         let query = '';
         if (_fields.produto) {
             query += `&nome=${_fields.produto}`;
@@ -42,7 +41,6 @@ export function Relatorio() {
             query += `&estoqueminimo=${_fields.estoqueminimo}`;
         }
 
-        console.log(query);
         return query;
     };
 
