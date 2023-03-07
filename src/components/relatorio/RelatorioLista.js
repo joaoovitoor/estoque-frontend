@@ -111,7 +111,6 @@ export const RelatorioLista = ({ produtos, fields, handleDetalhe, handleFields }
                                     // a must be equal to b
                                     return 0;
                                 })
-                                .slice(0, 10)
                                 .map((produto) => (
                                     <TableRow
                                         key={produto._id}
