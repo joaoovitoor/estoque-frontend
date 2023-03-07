@@ -2,7 +2,7 @@ import { ProdutoBarcode } from './ProdutoBarcode';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
-import { Grid, TextField } from '@mui/material';
+import { Grid, TextField, InputAdornment } from '@mui/material';
 import { IconButton } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -13,6 +13,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { styled } from '@mui/material/styles';
 import { useState } from 'react';
+import SearchIcon from '@mui/icons-material/Search';
 
 export const ProdutosLista = ({
     produtos,
@@ -22,6 +23,7 @@ export const ProdutosLista = ({
     handleBusca,
     query,
 }) => {
+    const [searchValue, setSearchValue] = useState(query);
     const [modalOpen, setModalOpen] = useState(false);
     const [codigo, setCodigo] = useState('');
 
@@ -71,8 +73,21 @@ export const ProdutosLista = ({
                         label='Busque por Produto'
                         name='produto'
                         autoComplete='produto'
-                        defaultValue={query}
-                        onChange={(e) => handleBusca(e.target.value)}
+                        defaultValue={searchValue}
+                        onChange={(e) => setSearchValue(e.target.value)}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position='end'>
+                                    <IconButton
+                                        aria-label='Buscar Produto'
+                                        size='small'
+                                        onClick={() => handleBusca(searchValue)}
+                                    >
+                                        <SearchIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
                     />
                 </Grid>
             </Grid>

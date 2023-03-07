@@ -3,7 +3,14 @@ import { Patch } from '../../data/Verbs';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import SaveIcon from '@mui/icons-material/Save';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
-import { Grid, TextField, Checkbox, FormControlLabel, IconButton } from '@mui/material';
+import {
+    Grid,
+    TextField,
+    Checkbox,
+    FormControlLabel,
+    IconButton,
+    InputAdornment,
+} from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -13,9 +20,18 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { styled } from '@mui/material/styles';
 import { useState } from 'react';
+import SearchIcon from '@mui/icons-material/Search';
 
 export const RelatorioLista = ({ produtos, fields, handleDetalhe, handleFields }) => {
+    const [searchValue, setSearchValue] = useState('');
     const [providencia, setProvidencia] = useState(providenciaVazio);
+
+    const handleSearch = async () => {
+        handleFields({
+            ...fields,
+            produto: searchValue,
+        });
+    };
 
     const handleProvidencia = (produto) => {
         setProvidencia({
@@ -43,7 +59,7 @@ export const RelatorioLista = ({ produtos, fields, handleDetalhe, handleFields }
     return (
         <>
             <Grid container spacing={0}>
-                <Grid item xs={8}>
+                <Grid item xs={10}>
                     <TextField
                         margin='normal'
                         required
@@ -52,16 +68,24 @@ export const RelatorioLista = ({ produtos, fields, handleDetalhe, handleFields }
                         label='Busque por Produto'
                         name='produto'
                         autoComplete='produto'
-                        defaultValue={fields.produto}
-                        onChange={(e) =>
-                            handleFields({
-                                ...fields,
-                                [e.target.name]: e.target.value,
-                            })
-                        }
+                        defaultValue={fields.produto ? fields.produto : searchValue}
+                        onChange={(e) => setSearchValue(e.target.value)}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position='end'>
+                                    <IconButton
+                                        aria-label='Buscar Produto'
+                                        size='small'
+                                        onClick={handleSearch}
+                                    >
+                                        <SearchIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
                     />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={2}>
                     <FormControlLabel
                         sx={{
                             marginTop: '20px',
@@ -69,12 +93,12 @@ export const RelatorioLista = ({ produtos, fields, handleDetalhe, handleFields }
                         }}
                         control={
                             <Checkbox
-                                name='checkbox'
-                                value={fields.checkbox}
+                                name='estoqueminimo'
+                                checked={fields.estoqueminimo}
                                 onChange={(e) =>
                                     handleFields({
                                         ...fields,
-                                        [e.target.name]: e.target.checked,
+                                        estoqueminimo: e.target.checked,
                                     })
                                 }
                             />

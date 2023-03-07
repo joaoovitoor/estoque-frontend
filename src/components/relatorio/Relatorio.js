@@ -9,7 +9,7 @@ import { ExportToExcel } from './ExportToExcel';
 export function Relatorio() {
     const [fields, setFields] = useState({
         produto: '',
-        checkbox: false,
+        estoqueminimo: false,
     });
 
     const [isLoading, setIsLoading] = useState(true);
@@ -27,19 +27,22 @@ export function Relatorio() {
     };
 
     const handleFields = (_fields) => {
+        setIsLoading(true);
         setFields(_fields);
     };
 
     const handleQuery = (_fields) => {
+        console.log(_fields);
         let query = '';
         if (_fields.produto) {
             query += `&nome=${_fields.produto}`;
         }
 
-        if (_fields.checkbox) {
-            query += `&estoqueminimo=${_fields.checkbox}`;
+        if (_fields.estoqueminimo) {
+            query += `&estoqueminimo=${_fields.estoqueminimo}`;
         }
 
+        console.log(query);
         return query;
     };
 
