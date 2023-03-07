@@ -1,39 +1,28 @@
-import { useState, useEffect, useRef } from 'react';
-import { CSVLink } from 'react-csv';
+import { useState } from 'react';
 import { Button } from '@mui/material';
-import { Get } from '../../data/Verbs';
 import { Loader } from '../loader/Loader';
 
 export const ExportToExcel = () => {
-    const [jsonData, setJsonData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const csvLinkRef = useRef(null);
 
     const fetchProdutos = async () => {
         setIsLoading(true);
-        const dataProdutos = await Get(`${process.env.REACT_APP_API_URL}/produtos`);
-        setIsLoading(false);
-        setJsonData(dataProdutos);
+        fetch(`${process.env.REACT_APP_API_URL}/produtos/csv?limit=100`)
+            .then((response) => response.blob())
+            .then((blob) => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'produtos.csv';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+
+                setIsLoading(false);
+            })
+            .catch((error) => console.error(error));
     };
-
-    let headers = [
-        { label: 'Código', key: 'codigo' },
-        { label: 'Produto', key: 'nome' },
-        { label: 'Estoque Mínimo', key: 'estoqueminimo' },
-        { label: 'Estoque Ideal', key: 'estoqueideal' },
-        { label: 'Saldo', key: 'saldo' },
-        { label: 'Providência', key: 'providencia' },
-    ];
-
-    const generateCSV = () => {
-        csvLinkRef.current.link.click();
-    };
-
-    useEffect(() => {
-        if (jsonData.length > 0) {
-            generateCSV();
-        }
-    }, [jsonData]);
 
     return (
         <>
@@ -44,18 +33,6 @@ export const ExportToExcel = () => {
                     Exportar Relatório CSV
                 </Button>
             )}
-
-            <CSVLink
-                data={jsonData}
-                headers={headers}
-                filename={'estoque.csv'}
-                separator={';'}
-                ref={csvLinkRef}
-                target='_blank'
-                style={{ display: 'none' }}
-            >
-                Gerar Excel
-            </CSVLink>
         </>
     );
 };
