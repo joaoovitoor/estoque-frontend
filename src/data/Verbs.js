@@ -1,6 +1,5 @@
 export const Get = async (url) => {
     const response = await fetch(url, {
-        mode: 'no-cors',
         headers: {
             Authorization: process.env.REACT_APP_TOKEN,
         },
@@ -15,6 +14,7 @@ export const Get = async (url) => {
 
 export const Download = async (url) => {
     const response = await fetch(url, {
+        mode: 'no-cors',
         headers: {
             Authorization: process.env.REACT_APP_TOKEN,
         },
