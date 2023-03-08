@@ -48,9 +48,7 @@ export function Relatorio() {
         const query = handleQuery(fields);
         const fetchProdutos = async () => {
             const dataProdutos = await Get(
-                `${process.env.REACT_APP_API_URL}/produtos?${
-                    query ? `limit=25${query}` : `limit=10`
-                }`,
+                `${process.env.REACT_APP_API_URL}/produtos?${query ? `${query}` : `limit=10`}`,
             );
 
             setProdutos(dataProdutos);
