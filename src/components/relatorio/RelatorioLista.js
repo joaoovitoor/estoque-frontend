@@ -132,10 +132,11 @@ export const RelatorioLista = ({ produtos, fields, handleDetalhe, handleFields }
                         {produtos.length > 0 &&
                             produtos
                                 .sort((a, b) => {
-                                    if (a.nome.toUpperCase() > b.nome.toUpperCase()) {
+                                    if (a.codigo.toUpperCase() > b.codigo.toUpperCase()) {
                                         return 1;
                                     }
-                                    if (a.nome.toUpperCase() < b.nome.toUpperCase()) {
+                                    
+                                    if (a.codigo.toUpperCase() < b.codigo.toUpperCase()) {
                                         return -1;
                                     }
                                     // a must be equal to b
