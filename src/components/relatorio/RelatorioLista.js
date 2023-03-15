@@ -83,6 +83,12 @@ export const RelatorioLista = ({ produtos, fields, handleDetalhe, handleFields }
                                 </InputAdornment>
                             ),
                         }}
+                        onKeyDown={(e) => {
+                            if (e.keyCode === 13) {
+                                handleSearch();
+                            }
+                        }}
+
                     />
                 </Grid>
                 <Grid item xs={2}>
@@ -153,7 +159,7 @@ export const RelatorioLista = ({ produtos, fields, handleDetalhe, handleFields }
                                         <TableCell>{produto.saldo}</TableCell>
                                         <TableCell>
                                             {providencia.status === true &&
-                                            providencia.produto === produto._id ? (
+                                                providencia.produto === produto._id ? (
                                                 <>
                                                     <TextField
                                                         margin='none'
