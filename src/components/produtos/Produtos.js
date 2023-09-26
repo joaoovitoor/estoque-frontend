@@ -103,6 +103,7 @@ export const Produtos = () => {
             const data = await Get(
                 `${process.env.REACT_APP_API_URL}/produtos?nome=${query}&limit=10`,
             );
+            
             const produtosOrdenados = ordenarData(data, 'created_at', 'desc');
 
             setProdutos(produtosOrdenados);
